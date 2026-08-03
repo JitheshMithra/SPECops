@@ -25,3 +25,65 @@ This sweeps qubit count and data re-upload count across a quantum-assisted PINN,
 - Measures representational redundancy inside the trained quantum layer (pairwise correlation between measured-qubit outputs) as a mechanistic account of the expressivity ceiling, not just a correlation
 - Compares classical and quantum architectures under matched parameter counts and matched optimizer/epoch budgets
 - Exports results as CSV/JSON/PNG under ```results/```
+
+## Technical Report
+
+The full writeup, methodology, results, and the honest caveats (single-seed extended runs, an under-parameterized early baseline, etc.) will be posted soon
+
+## Getting Started
+
+### Installation
+
+```bash
+git clone <repo-url>
+cd SPECops/src
+pip install -r requirements.txt
+```
+
+### Running
+
+All scripts run from the `src` directory.
+
+**Classical control (run this first, it's the sanity check):**
+```bash
+python main_classical.py
+```
+
+**Single QAPINN run:**
+```bash
+python main.py
+```
+
+**Evaluate against the Cole-Hopf reference:**
+```bash
+python eval.py
+```
+
+**Full sweep (12 configs x 3 seeds):**
+```bash
+python sweep.py
+```
+Crash-durable — writes a row per seed as it finishes, so a killed run can resume instead of restarting from scratch.
+
+**Fourier / expressivity analysis (no training needed, purely structural):**
+```bash
+python fourier_spectrum.py
+python shock_spectrum.py
+python frequency_unit_conversion.py
+```
+
+**Trainability and redundancy diagnostics:**
+```bash
+python gradient_variance.py
+python activation_analysis.py
+python activation_diversity.py
+python flatness_check.py
+```
+
+**Extended training / optimizer comparisons:**
+```bash
+python extend_training.py --n-qubits 5 --n-reuploads 5 --seed 0 --checkpoint sweep_checkpoints/q5_r5_s0.pkl --additional-epochs 400
+python classical_deep_baseline.py --hidden-layers 8 --hidden-width 20 --epochs 5000 --lr 1e-3
+python train_adam.py --n-qubits 5 --n-reuploads 5 --epochs 1000 --lr 1e-3
+python run_classical_comparison.py
+```
