@@ -4,7 +4,7 @@ _Built for the WISER Global Quantum+AI Program 2026 - BQP Industry Challenge_
 
 [![License](https://img.shields.io/badge/License-MIT-green)](https://github.com/JitheshMithra/SPECops/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10-blue)](https://www.python.org/)
-![Field](https://img.shields.io/badge/Field-quant-ML-purple) 
+![Field](https://img.shields.io/badge/Field-quant--ML-purple) 
 <p align="center">
   <a href="https://www.qinetic.org/">
     <img width="769" height="279" alt="image" src="https://github.com/user-attachments/assets/45ade68c-9838-4e06-aaea-3efa7e4adb11" />
