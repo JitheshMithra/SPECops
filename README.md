@@ -1,4 +1,5 @@
 **Version**: v1.0
+
 _Built for the WISER Global Quantum+AI Program 2026 - BQP Industry Challenge_
 
 [![License](https://img.shields.io/badge/License-MIT-green)](https://github.com/JitheshMithra/SPECops/blob/main/LICENSE)
