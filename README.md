@@ -24,4 +24,4 @@ This sweeps qubit count and data re-upload count across a quantum-assisted PINN,
 - Measures gradient variance across random initializations as a barren-plateau check
 - Measures representational redundancy inside the trained quantum layer (pairwise correlation between measured-qubit outputs) as a mechanistic account of the expressivity ceiling, not just a correlation
 - Compares classical and quantum architectures under matched parameter counts and matched optimizer/epoch budgets
-- Exports results as CSV/JSON/PNG under results/
+- Exports results as CSV/JSON/PNG under ```results/```
