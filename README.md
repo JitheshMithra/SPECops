@@ -63,7 +63,7 @@ python eval.py
 ```bash
 python sweep.py
 ```
-Crash-durable — writes a row per seed as it finishes, so a killed run can resume instead of restarting from scratch.
+Crash-durable: writes a row per seed as it finishes, so a killed run can resume instead of restarting from scratch.
 
 **Fourier / expressivity analysis (no training needed, purely structural):**
 ```bash
