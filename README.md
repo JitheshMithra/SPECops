@@ -4,7 +4,9 @@
 [![Python](https://img.shields.io/badge/Python-3.10-blue)](https://www.python.org/)
 ![Field](https://img.shields.io/badge/Field-quant--ph-purple) 
 <p align="center">
-<img width="769" height="279" alt="image" src="https://github.com/user-attachments/assets/45ade68c-9838-4e06-aaea-3efa7e4adb11" />
+  <a href="https://www.qinetic.org/">
+    <img width="769" height="279" alt="image" src="https://github.com/user-attachments/assets/45ade68c-9838-4e06-aaea-3efa7e4adb11" />
+  </a>
 </p>
 
 
