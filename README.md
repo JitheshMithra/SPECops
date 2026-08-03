@@ -35,7 +35,7 @@ The full writeup, methodology, results, and the honest caveats (single-seed exte
 ### Installation
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/JitheshMithra/SPECops/
 cd SPECops/src
 pip install -r requirements.txt
 ```
