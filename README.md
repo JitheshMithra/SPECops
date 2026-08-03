@@ -4,7 +4,8 @@
 ![Python](https://img.shields.io/badge/Python-3.10-blue) 
 ![Field](https://img.shields.io/badge/Field-quant--ph-purple) 
 <p align="center">
-<img width="814" height="331" alt="image" src="https://github.com/user-attachments/assets/ff7f225c-f38a-4fb6-8ca5-dd84cbf5cefe" />
+<img width="789" height="296" alt="image" src="https://github.com/user-attachments/assets/969636a0-91d8-4489-b854-dc887d6887f5" />
+
 </p>
 
 
