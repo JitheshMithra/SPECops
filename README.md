@@ -1,4 +1,5 @@
-**Status**: v1.0
+**Version**: v1.0
+_Built for the WISER Global Quantum+AI Program 2026 - BQP Industry Challenge_
 
 [![License](https://img.shields.io/badge/License-MIT-green)](https://github.com/JitheshMithra/SPECops/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10-blue)](https://www.python.org/)
@@ -9,5 +10,6 @@
   </a>
 </p>
 
+<p align="center"><strong>Spectral Explainability & Circuit Optimization for Quantum-Assisted Physics-Informed Neural Networks</strong></p>
 
-Spectral explainability toolkit for quantum-assisted PINNs. It uses Fourier analysis to show how encoding and circuit depth shape a QAPINN's expressivity, pairs that with gradient-variance diagnostics to expose trainability costs, and turns both into a design methodology for choosing quantum layer architectures per PDE class.
+SPECops investigates why replacing the first hidden layer of a Physics-Informed Neural Network (PINN) with a variational quantum circuit (a "QAPINN") changes learning behavior when solving the viscous Burgers' equation. Rather than asking whether QAPINNs beat classical PINNs, this project asks what the quantum layer's data-encoding scheme actually does to the network's representational capacity, and whether that shows up as a measurable, explainable property inside the trained model.
