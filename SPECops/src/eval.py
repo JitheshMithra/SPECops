@@ -3,6 +3,7 @@ import csv
 import importlib
 import os
 import time
+from functools import lru_cache
 
 from pennylane import numpy as np
 from scipy.integrate import quad
@@ -10,11 +11,15 @@ from scipy.integrate import quad
 import main
 from checkpoint import loadCheckpoint
 
+RESULTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
+
 #cole-hopf gives the exact solution to burgers' eq for our IC/BC, but the integrals don't collapse to anything elementary, so we fall back to quad. the exp(-eta^2 / 4*nu*t) term is a gaussian centered at eta=0 with width ~sqrt(nu*t), and nu is tiny here (~0.003), so for small t that gaussian is a needle - a fixed +/-10 window starves quad of samples near the peak and it reports a divergent/roundoff integral. scaling the window (and bumping the subdivision limit) keeps the peak well inside the sampled range
 def etaWindow(t, nu):
     width = 8.0 * np.sqrt(4 * nu * max(t, 1e-6))
     return max(width, 0.5) #still need enough range to see the cos(...) term when t is tiny
 
+#the reference solution doesn't depend on any trained model, and the sweep re-evaluates the exact same (x,t) grid dozens of times (once per seed per config) - caching it turns that into a one-time cost instead of a repeated one
+@lru_cache(maxsize=None)
 def coleHopfU(x, t, nu=main.NU):
     if t <= 0: #IC is exact, no need (and no way) to integrate through it
         return -np.sin(np.pi * x)
@@ -57,8 +62,8 @@ def evaluate(model, params, nx=256, nt=100):
     return l2Error, pdeError
 
 def logResult(resultsPath, config, l2Error, pdeError, checkpointPath):
-    #tag every row with the model config + a timestamp so repeated runs append
-    #instead of clobbering each other
+    #tag every row with the model config + a timestamp so repeated runs append instead of clobbering each other
+    os.makedirs(os.path.dirname(os.path.abspath(resultsPath)), exist_ok=True)
     fileExists = os.path.exists(resultsPath)
     with open(resultsPath, "a", newline="") as f:
         writer = csv.writer(f)
@@ -78,7 +83,7 @@ def logResult(resultsPath, config, l2Error, pdeError, checkpointPath):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--checkpoint", default="checkpoint.pkl")
-    parser.add_argument("--results", default="eval_results.csv")
+    parser.add_argument("--results", default=os.path.join(RESULTS_DIR, "eval_results.csv"))
     parser.add_argument("--model", default="main", help="module that defines network()/pde_residual() for this checkpoint, e.g. main or main_classical")
     parser.add_argument("--nx", type=int, default=256)
     parser.add_argument("--nt", type=int, default=100)

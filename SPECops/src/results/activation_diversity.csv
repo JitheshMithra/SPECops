@@ -1,0 +1,11 @@
+model,config,layer,across_neuron_variance,mean_pairwise_correlation
+classical,classical_control,pre_layer_encoding,0.0039754457769001295,-0.03628436106375645
+classical,classical_control,post_quantum_layer,0.0039754457769001295,-0.03628436106375645
+quantum,q3_r1,pre_layer_encoding,0.16303112884171547,-0.2789601166020608
+quantum,q3_r1,post_quantum_layer,0.00010711198415025855,0.9911051811982522
+quantum,q5_r5,pre_layer_encoding,0.08775918015301751,-0.1079233313829302
+quantum,q5_r5,post_quantum_layer,0.002033873441473,0.8891426324064499
+quantum,q3_r5,pre_layer_encoding,0.05339721338433429,-0.26183975271894283
+quantum,q3_r5,post_quantum_layer,0.05013095533159349,0.8234687900221065
+quantum,q5_r1,pre_layer_encoding,0.061851181797105546,-0.0825346142915914
+quantum,q5_r1,post_quantum_layer,0.0018074139696367477,0.9834728059738651

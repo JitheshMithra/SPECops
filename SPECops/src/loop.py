@@ -22,10 +22,11 @@ def train(epochs = 100, lr=0.05, n_f_batch=20, checkpointPath=None, model=None):
         t_f_batch = t_f[idx]
         x_f_batch = x_f[idx]
 
-        cost_fn = lambda p: model.loss_fn(p, t_data, x_data, u_data, t_f_batch, x_f_batch) #this defines the cost function that will be minimized during training
+        #params has to be passed to opt.step as separate positional args, not one bundled tuple - pennylane's autograd only tracks requires_grad on individual arrays, so a single tuple argument differentiates to an empty gradient and opt.step is a silent no-op (this was previously the case here: params never updated across any epoch)
+        cost_fn = lambda *p: model.loss_fn(p, t_data, x_data, u_data, t_f_batch, x_f_batch) #this defines the cost function that will be minimized during training
 
-        params = opt.step(cost_fn, params) #this updates the parameters of the quantum circuit using the optimizer
-        current_loss = cost_fn(params) #this computes the current loss value after the parameter update
+        params = opt.step(cost_fn, *params) #this updates the parameters of the quantum circuit using the optimizer
+        current_loss = cost_fn(*params) #this computes the current loss value after the parameter update
         history.append(current_loss) #this appends the current loss value to the history list
 
         if epoch % 10 == 0 or epoch == 1:

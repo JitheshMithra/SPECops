@@ -37,11 +37,7 @@ def make_training_data():
 
     return t_data, x_data, u_data, t_f, x_f
 
-#builds a fresh (quantum_circuit, init_params, network, pde_residual, loss_fn) set
-#for a given architecture, so n_qubits/n_reuploads become a config instead of a
-#file edit - sweep.py calls this directly with whatever combo it's currently on,
-#the module-level names below are just build_model()'s default output kept around
-#so nothing that already imports from main.py breaks
+#builds a fresh (quantum_circuit, init_params, network, pde_residual, loss_fn) set for a given architecture, so n_qubits/n_reuploads become a config instead of a file edit - sweep.py calls this directly with whatever combo it's currently on, the module-level names below are just build_model()'s default output kept around so nothing that already imports from main.py breaks
 def build_model(n_qubits=4, n_reuploads=3):
     dev = qp.device("default.qubit", wires=n_qubits) #create a quantum device with n_qubits qubits
 
@@ -61,9 +57,7 @@ def build_model(n_qubits=4, n_reuploads=3):
             for q in range(n_qubits):
                 qp.CNOT(wires=[q, (q + 1) % n_qubits])
 
-        #reading out every qubit instead of just qubit 0 - this matches how BQP-style
-        #architectures use the circuit, and it stops the quantum layer from getting
-        #squeezed down to a single scalar before it even reaches the post-layer
+        #reading out every qubit instead of just qubit 0 - this matches how BQP-style architectures use the circuit, and it stops the quantum layer from getting squeezed down to a single scalar before it even reaches the post-layer
         return [qp.expval(qp.PauliZ(i)) for i in range(n_qubits)]
 
     def init_params():
@@ -79,11 +73,17 @@ def build_model(n_qubits=4, n_reuploads=3):
 
         return W1, b1, W_q, W2, b2
 
-    def network(t, x, params):
-        W1, b1, W_q, W2, b2 = params
+    PRE_LAYER_SCALE = np.pi #how far the tanh output gets stretched before it hits the encoding gates
 
+    def pre_layer(t, x, params): #pulled out of network() so anything that needs the exact encoding transform (e.g. frequency_unit_conversion.py) can reuse it instead of re-deriving it
+        W1, b1 = params[0], params[1]
         inp = np.array([t, x]) #combine t and x into a single input array
-        angles = np.tanh(W1 @ inp + b1) * np.pi #pre-layer: linear transformation followed by tanh activation bounded to [-pi, pi]
+        return np.tanh(W1 @ inp + b1) * PRE_LAYER_SCALE #pre-layer: linear transformation followed by tanh activation bounded to [-pi, pi]
+
+    def network(t, x, params):
+        W_q, W2, b2 = params[2], params[3], params[4]
+
+        angles = pre_layer(t, x, params)
 
         q_out = quantum_circuit(angles, W_q) #quantum layer: outputs one number in [-1, 1] per qubit
 
@@ -126,10 +126,10 @@ def build_model(n_qubits=4, n_reuploads=3):
         quantum_circuit=quantum_circuit, init_params=init_params,
         network=network, pde_residual=pde_residual, loss_fn=loss_fn,
         checkpoint_config=checkpoint_config,
+        pre_layer=pre_layer, pre_layer_scale=PRE_LAYER_SCALE,
     )
 
-#default 4-qubit/3-reupload model, kept at module level so `import main` still
-#gives you main.network(), main.N_Qubits, etc like before build_model() existed
+#default 4-qubit/3-reupload model, kept at module level so `import main` still gives you main.network(), main.N_Qubits, etc like before build_model() existed
 _default = build_model(n_qubits=4, n_reuploads=3)
 N_Qubits = _default.n_qubits
 N_Reuploads = _default.n_reuploads
@@ -154,7 +154,7 @@ if __name__ == "__main__":
     print(f"pde_residual({t_test}, {x_test}) = {f_test}")
 
     t_data, x_data, u_data, t_f, x_f = make_training_data()
-    # NOTE: for a quick first test, only using a handful of collocation points
+    #for a quick first test, only using a handful of collocation points
     t_f_small = t_f[:20]
     x_f_small = x_f[:20]
 
