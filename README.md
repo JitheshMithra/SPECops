@@ -15,14 +15,14 @@ _Built for the WISER Global Quantum+AI Program 2026 - [BQP Industry Challenge](h
 
 SPECops starts from a simple question about quantum-assisted PINNs: when you swap a classical layer for a quantum circuit and the network gets more accurate, is that actually because the quantum layer is more expressive, or is something else going on? Most benchmarks stop at "it worked" or "it didn't." This project tries to get underneath that, using the viscous Burgers' equation as a testbed.
 
-This sweeps qubit count and data re-upload count across a quantum-assisted PINN, works out each configuration's accessible Fourier frequency range from first principles, and checks whether that range actually predicts where the network struggles. Runs entirely on Pennylane simulator, nothing here needs quantum hardware.
+This sweeps qubit count and data re-upload count across a quantum-assisted PINN, works out each configuration's accessible Fourier frequency range from first principles, and checks whether that range actually predicts where the network struggles. Runs entirely on Pennylane simulator, nothing here needs quantum hardware. Spectral bias, the tendency of neural networks to fit low-frequency components before high-frequency ones, is the named phenomenon this project provides a mechanistic account of, connecting it directly to the Fourier ceiling imposed by circuit structure. 
 
 **What it does:**
 - Trains classical PINNs and QAPINNs on 1D viscous Burgers' equation against an exact Cole-Hopf reference solution
 - Sweeps qubit count (3, 4, 5) x data re-upload count (1, 2, 3, 5), multi-seed
 - Computes each configuration's accessible Fourier frequency spectrum (qml.fourier, theta-space and physical-x) and checks it against the target solution's own frequency content, region by region
 - Measures gradient variance across random initializations as a barren-plateau check
-- Measures representational redundancy inside the trained quantum layer (pairwise correlation between measured-qubit outputs) as a mechanistic account of the expressivity ceiling, not just a correlation
+- Measures representational redundancy inside the trained quantum layer (pairwise correlation and SVD effective rank of post-quantum-layer outputs,  a linear algebra tool for quantifying representational redundancy instead of just measuring correlation) as a mechanistic account of the expressivity ceiling, not just a correlation
 - Compares classical and quantum architectures under matched parameter counts and matched optimizer/epoch budgets
 - Exports results as CSV/JSON/PNG under ```results/```
 
