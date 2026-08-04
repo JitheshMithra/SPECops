@@ -106,7 +106,7 @@ python run_classical_comparison.py
 - Only one PDE so far (viscous Burgers'); a heat-equation cross-check is scaffolded but not finished
 - Extended-training comparisons past the base sweep are currently single-seed
 - The original classical control was noticeably smaller (parameter count) than the largest QAPINN tested; a parameter-matched control exists but the optimizer-matched comparison is still being finalized
-- No configuration tested actually reaches expressivity sufficiency in either the smooth or shock region of the solution — read the sufficiency numbers as relative distance, not a pass/fail line
+- No configuration tested actually reaches expressivity sufficiency in either the smooth or shock region of the solution; read the sufficiency numbers as relative distance, not a pass/fail line
 - Simulator only, nothing here has touched real quantum hardware
 
 ## Future Work
