@@ -87,3 +87,39 @@ python classical_deep_baseline.py --hidden-layers 8 --hidden-width 20 --epochs 5
 python train_adam.py --n-qubits 5 --n-reuploads 5 --epochs 1000 --lr 1e-3
 python run_classical_comparison.py
 ```
+### Results 
+
+| File | Produced by | What it contains |
+|---|---|---|
+| `sweep_results.csv` / `sweep_results_stratified.csv` | `sweep.py` | Per-seed accuracy/timing/params; split by smooth vs. shock region |
+| `fourier_spectrum_results.csv` | `fourier_spectrum.py` | Accessible Fourier frequencies per config (structural, no training needed) |
+| `burgers_shock_spectrum.json` | `shock_spectrum.py` | Target solution's required bandwidth, by time snapshot |
+| `frequency_unit_conversion.csv`, `expressivity_vs_shock.csv` | `frequency_unit_conversion.py` | Theta-space ceiling converted to physical-x units; sufficiency-ratio analysis |
+| `gradient_variance_results.csv` | `gradient_variance.py` | Barren-plateau check across configs |
+| `activation_diversity.csv`, `activation_measurement_check.csv` | `activation_diversity.py` | The redundancy metric; check for whether it's a measurement artifact |
+| `flatness_check.csv/.png` | `flatness_check.py` | Solution flatness vs. reference — the spectral-bias confirmation |
+| `classical_comparison.csv`, `longer_training_results.csv` | comparison scripts | Classical vs. quantum, matched-parameter and matched-optimizer results |
+| `results/invalid_pre_fix/` | — | Archived, invalid — predates an optimizer bug fix. Don't use anything in here. |
+
+## Limitations
+
+- Only one PDE so far (viscous Burgers'); a heat-equation cross-check is scaffolded but not finished
+- Extended-training comparisons past the base sweep are currently single-seed
+- The original classical control was noticeably smaller (parameter count) than the largest QAPINN tested; a parameter-matched control exists but the optimizer-matched comparison is still being finalized
+- No configuration tested actually reaches expressivity sufficiency in either the smooth or shock region of the solution — read the sufficiency numbers as relative distance, not a pass/fail line
+- Simulator only, nothing here has touched real quantum hardware
+
+## Future Work
+
+- Pull the PDE-specific logic behind a shared interface so adding a new PDE (starting with the heat equation) doesn't mean touching the core pipeline
+- Build the direct CLI input for parameters from users, a tool to observe the effect assumptions have on behavior
+- Track redundancy/effective rank across training epochs instead of just at fixed checkpoints
+- Compare entanglement patterns and measurement operators (expectation values vs. probability vector)
+- Shapley-value gate attribution for the variational block
+
+### Acknowledgements
+This project was carried out under **Qinetic Labs**, with Jithesh Mithra as lead researcher, leading the project and responsible for the majority of the implementation, experiments, and analysis. Thanks to Isaac for contributions on the theory side, including work on the Fourier-ceiling framing and the disentanglement analysis.
+
+**Contact**:
+- _Email_: jitheshmithra412 [at] gmail [dot] com 
+- _LinkedIn_: https://www.linkedin.com/in/jitheshmithra/
