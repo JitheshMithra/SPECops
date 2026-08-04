@@ -97,9 +97,9 @@ python run_classical_comparison.py
 | `frequency_unit_conversion.csv`, `expressivity_vs_shock.csv` | `frequency_unit_conversion.py` | Theta-space ceiling converted to physical-x units; sufficiency-ratio analysis |
 | `gradient_variance_results.csv` | `gradient_variance.py` | Barren-plateau check across configs |
 | `activation_diversity.csv`, `activation_measurement_check.csv` | `activation_diversity.py` | The redundancy metric; check for whether it's a measurement artifact |
-| `flatness_check.csv/.png` | `flatness_check.py` | Solution flatness vs. reference — the spectral-bias confirmation |
+| `flatness_check.csv/.png` | `flatness_check.py` | Solution flatness vs. reference: the spectral-bias confirmation |
 | `classical_comparison.csv`, `longer_training_results.csv` | comparison scripts | Classical vs. quantum, matched-parameter and matched-optimizer results |
-| `results/invalid_pre_fix/` | — | Archived, invalid — predates an optimizer bug fix. Don't use anything in here. |
+| `results/invalid_pre_fix/` | - | Archived, invalid: predates an optimizer bug fix. Don't use anything in here. |
 
 ## Limitations
 
