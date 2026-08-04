@@ -118,7 +118,7 @@ python run_classical_comparison.py
 - Shapley-value gate attribution for the variational block
 
 ### Acknowledgements
-This project was carried out under [**Qinetic Labs**](https://www.qinetic.org/), with Jithesh Mithra as lead researcher, leading the project and responsible for the majority of the implementation, experiments, and analysis. Thanks to Isaac Leon for contributions on the theory side, including work on the Fourier-ceiling framing and the disentanglement analysis.
+This project was carried out under [**Qinetic Labs**](https://www.qinetic.org/), with Jithesh Mithra as head researcher, leading the project and responsible for the majority of the implementation, experiments, and analysis. Thanks to Isaac Leon for contributions on the theory side, including work on the Fourier-ceiling framing and the disentanglement analysis.
 
 **Contact**:
 - _Email_: jitheshmithra412 [at] gmail [dot] com **and/or** isaacleon0907 [at] gmail [dot] com
