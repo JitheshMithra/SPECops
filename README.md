@@ -121,5 +121,5 @@ python run_classical_comparison.py
 This project was carried out under [**Qinetic Labs**](https://www.qinetic.org/), with Jithesh Mithra as lead researcher, leading the project and responsible for the majority of the implementation, experiments, and analysis. Thanks to Isaac Leon for contributions on the theory side, including work on the Fourier-ceiling framing and the disentanglement analysis.
 
 **Contact**:
-- _Email_: jitheshmithra412 [at] gmail [dot] com 
+- _Email_: jitheshmithra412 [at] gmail [dot] com **or** isaacleon0907 [at] gmail [dot] com
 - _LinkedIn_: https://www.linkedin.com/in/jitheshmithra/
