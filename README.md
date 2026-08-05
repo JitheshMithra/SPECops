@@ -184,7 +184,7 @@ All scripts run from the `src` directory.
 | `--n-f-batch` | int | 20 | |
 
 
-**Classical control (run this first, it's the sanity check):**
+**Classical control (run this first):**
 ```bash
 python main_classical.py
 ```
