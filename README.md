@@ -25,7 +25,6 @@ This sweeps qubit count and data re-upload count across a quantum-assisted PINN,
 - Measures representational redundancy inside the trained quantum layer (pairwise correlation and SVD effective rank of post-quantum-layer outputs,  a linear algebra tool for quantifying representational redundancy instead of just measuring correlation) as a mechanistic account of the expressivity ceiling, not just a correlation
 - Compares classical and quantum architectures under matched parameter counts and matched optimizer/epoch budgets
 - Attributes each variational layer's contribution to the trained circuit via Shapley values (q5,r5 config)
-- Tracks representational redundancy via SVD effective rank, not just pairwise correlation
 - CLI wrapper on `main.py` for qubit count / re-uploads / epochs / seed
 - Exports results as CSV/JSON/PNG under ```results/```
 
@@ -194,17 +193,20 @@ python heat_equation.py
 python heat_equation_sweep.py
 python redundancy_over_epochs.py
 python plot_q5_r5_convergence.py
+python stratified_eval.py
 ```
 ### Results 
 
 | File | Produced by | What it contains |
 |---|---|---|
-| `sweep_results.csv` / `sweep_results_stratified.csv` | `sweep.py` | Per-seed accuracy/timing/params; split by smooth vs. shock region |
+| `sweep_results.csv` | `sweep.py` | Per-seed accuracy/timing/params |
+| `sweep_results_stratified.csv` | `stratified_eval.py` | Same, split by smooth vs. shock region |
 | `fourier_spectrum_results.csv` | `fourier_spectrum.py` | Accessible Fourier frequencies per config (structural, no training needed) |
 | `burgers_shock_spectrum.json` | `shock_spectrum.py` | Target solution's required bandwidth, by time snapshot |
-| `frequency_unit_conversion.csv`, `expressivity_vs_shock.csv` | `frequency_unit_conversion.py` | Theta-space ceiling converted to physical-x units; sufficiency-ratio analysis |
+| `frequency_unit_conversion.csv`, `expressivity_vs_shock.csv`, `pre_layer_slope_vs_x.png` | `frequency_unit_conversion.py` | Theta-space ceiling converted to physical-x units; sufficiency-ratio analysis |
 | `gradient_variance_results.csv` | `gradient_variance.py` | Barren-plateau check across configs |
 | `activation_diversity.csv`, `activation_measurement_check.csv` | `activation_diversity.py` | The redundancy metric; check for whether it's a measurement artifact |
+| `activation_analysis.csv`, `activation_comparison.png` | `activation_analysis.py` | Redundancy/activation comparison between a classical and quantum checkpoint |
 | `flatness_check.csv/.png` | `flatness_check.py` | Solution flatness vs. reference: the spectral-bias confirmation |
 | `classical_comparison.csv`, `longer_training_results.csv` | comparison scripts | Classical vs. quantum, matched-parameter and matched-optimizer results |
 | `effective_rank.csv` | `effective_rank.py` | SVD-based effective rank per config |
@@ -225,7 +227,7 @@ python plot_q5_r5_convergence.py
 
 - Formalize the circuit-reuse pattern used by `heat_equation.py` into a documented, general PDE interface
 - Finish the redundancy/effective-rank-over-epochs sweep (in progress)
-- Compare entanglement patterns and measurement operators, expectation values vs. probability vector (in progress)
+- Compare entanglement patterns and measurement operators, expectation values vs. probability vector (planned, not started)
 - Extend Shapley attribution to gate-level and beyond the single q5,r5 config
 
 ### Acknowledgements
