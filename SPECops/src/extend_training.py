@@ -20,6 +20,7 @@ def trainFrom(model, initialParams, additionalEpochs, lr=0.05, nFBatch=20,
     opt = qp.GradientDescentOptimizer(stepsize=lr)
     t_data, x_data, u_data, t_f, x_f = make_training_data()
 
+    trainStart = time.time()
     history = []
     evalPoints = []
     for i in range(1, additionalEpochs + 1):
@@ -40,9 +41,10 @@ def trainFrom(model, initialParams, additionalEpochs, lr=0.05, nFBatch=20,
             evalStart = time.time()
             l2Error, pdeError = evaluate(model, params, nx=evalNx, nt=evalNt)
             evalTime = time.time() - evalStart
+            wallClockElapsed = time.time() - trainStart #cumulative wall-clock since trainFrom started, so time-to-plateau is readable straight from the CSV, not just epoch-to-plateau
             evalPoints.append({"epoch": epoch, "l2_error": l2Error, "pde_residual_error": pdeError,
-                                "train_loss": float(current_loss)})
-            print(f"  [eval @ epoch {epoch}] l2={l2Error:.4f} pdeErr={pdeError:.6f} (eval took {evalTime:.1f}s)", flush=True)
+                                "train_loss": float(current_loss), "wall_clock_elapsed_sec": wallClockElapsed})
+            print(f"  [eval @ epoch {epoch}] l2={l2Error:.4f} pdeErr={pdeError:.6f} (eval took {evalTime:.1f}s, wall_clock_elapsed={wallClockElapsed:.1f}s)", flush=True)
 
     return params, history, evalPoints
 
@@ -71,9 +73,10 @@ def run(nQubits, nReuploads, seed, checkpointPath, additionalEpochs, startEpoch,
     with open(outCsv, "a", newline="") as f:
         writer = csv.writer(f)
         if not fileExists:
-            writer.writerow(["n_qubits", "n_reuploads", "seed", "total_epochs", "l2_error", "pde_residual_error", "train_loss"])
+            writer.writerow(["model", "n_qubits", "n_reuploads", "seed", "total_epochs", "l2_error", "pde_residual_error", "train_loss", "wall_clock_elapsed_sec"])
         for point in evalPoints:
-            writer.writerow([nQubits, nReuploads, seed, point["epoch"], point["l2_error"], point["pde_residual_error"], point["train_loss"]])
+            writer.writerow(["quantum_pinn", nQubits, nReuploads, seed, point["epoch"], point["l2_error"], point["pde_residual_error"],
+                              point["train_loss"], point["wall_clock_elapsed_sec"]])
 
     return params, history, evalPoints
 

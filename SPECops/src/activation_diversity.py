@@ -1,6 +1,9 @@
 import csv
 import os
 
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 import pennylane as qp
 from pennylane import numpy as np
 
@@ -160,17 +163,63 @@ def runExpandedAnalysis(configs, nx=20, nt=20, activationCsvPath=None, diversity
 
     return activationRows, diversityRows
 
+#bar chart of the post_quantum_layer diversity metrics across whichever configs are passed in, reading straight from the already-saved CSV rather than rebuilding any quantum circuit - matches activation_analysis.py's subplot-per-metric bar style (labeled axes, one plot per metric) rather than flatness_check.py's heatmap style, since these are per-config scalars, not a (t,x) surface
+def plotDiversity(configs, diversityCsvPath=None, plotPath=None):
+    diversityCsvPath = diversityCsvPath or os.path.join(RESULTS_DIR, "activation_diversity.csv")
+    plotPath = plotPath or os.path.join(RESULTS_DIR, "activation_diversity.png")
+
+    rows = {}
+    with open(diversityCsvPath, newline="") as f:
+        for row in csv.DictReader(f):
+            if row["layer"] == "post_quantum_layer" and row["config"] in configs:
+                rows[row["config"]] = row
+
+    variances = [float(rows[c]["across_neuron_variance"]) for c in configs]
+    correlations = [float(rows[c]["mean_pairwise_correlation"]) for c in configs]
+
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    xPos = range(len(configs))
+
+    axes[0].bar(xPos, variances, 0.6)
+    axes[0].set_yscale("log")
+    axes[0].set_xticks(xPos)
+    axes[0].set_xticklabels(configs, rotation=45, ha="right")
+    axes[0].set_ylabel("across-neuron variance (log scale)")
+    axes[0].set_title("post-quantum-layer variance by config")
+
+    axes[1].bar(xPos, correlations, 0.6, color="tab:orange")
+    axes[1].set_xticks(xPos)
+    axes[1].set_xticklabels(configs, rotation=45, ha="right")
+    axes[1].set_ylabel("mean pairwise correlation")
+    axes[1].set_ylim(0, 1)
+    axes[1].set_title("post-quantum-layer redundancy by config")
+
+    fig.suptitle(f"post-quantum-layer diversity across {len(configs)} configs")
+    plt.tight_layout()
+    plt.savefig(plotPath)
+    plt.close()
+    print(f"saved {plotPath}", flush=True)
+    return plotPath
+
 if __name__ == "__main__":
     classicalCkpt = os.path.join(sweep.DEFAULT_CHECKPOINT_DIR, "classical_s0.pkl")
-    q3r1Ckpt = sweep.checkpointPathFor(3, 1, sweep.DEFAULT_CHECKPOINT_DIR, seed=0)
-    q5r5Ckpt = sweep.checkpointPathFor(5, 5, sweep.DEFAULT_CHECKPOINT_DIR, seed=0)
 
-    print("measurement-artifact check (same-observable vs mixed-observable readout)", flush=True)
-    checkMeasurementArtifact([("q3_r1", q3r1Ckpt), ("q5_r5", q5r5Ckpt)])
+    #all 12 sweep configs (3 qubit counts x 4 reupload counts), not just the 4 corners - all seed=0 checkpoints already exist from sweep.py, no retraining needed
+    sweepConfigs = [(f"q{nQ}_r{nR}", nQ, nR) for nQ in sweep.DEFAULT_QUBITS for nR in sweep.DEFAULT_REUPLOADS]
+    sweepConfigLabels = [label for label, _, _ in sweepConfigs]
+    sweepCheckpoints = {
+        label: sweep.checkpointPathFor(nQ, nR, sweep.DEFAULT_CHECKPOINT_DIR, seed=0)
+        for label, nQ, nR in sweepConfigs
+    }
 
-    print("expanded activation analysis (classical, q3_r1, q5_r5)", flush=True)
-    runExpandedAnalysis([
-        ("classical_control", "classical", classicalCkpt),
-        ("q3_r1", "quantum", q3r1Ckpt),
-        ("q5_r5", "quantum", q5r5Ckpt),
-    ])
+    print(f"measurement-artifact check (same-observable vs mixed-observable readout) across {len(sweepConfigLabels)} configs", flush=True)
+    checkMeasurementArtifact([(label, sweepCheckpoints[label]) for label in sweepConfigLabels])
+
+    print(f"expanded activation analysis (classical + {len(sweepConfigLabels)} quantum configs)", flush=True)
+    runExpandedAnalysis(
+        [("classical_control", "classical", classicalCkpt)]
+        + [(label, "quantum", sweepCheckpoints[label]) for label in sweepConfigLabels]
+    )
+
+    print("plotting post-quantum-layer diversity across all 12 configs", flush=True)
+    plotDiversity(sweepConfigLabels)

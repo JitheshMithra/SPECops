@@ -7,6 +7,7 @@ from scipy.integrate import quad
 
 import main
 from main import X_Min, X_Max, T_Min, T_Max, make_training_data
+from eval import buildEvalGrid, relativeL2Error
 
 #cross-validation PDE for the QAPINN architecture: same domain, same IC/BC, same encoding/quantum-circuit/readout as main.py's Burgers setup (reused directly from main.build_model, since none of that is PDE-specific) - only the physics term and the reference solution change; the heat equation's reference solution is a Fourier sine series instead of the Cole-Hopf integral, and it's linear (no shock), so it's a much easier sanity check for whether a given (n_qubits, n_reuploads) config is expressive/trainable enough at all, before trusting it on the harder Burgers problem
 ALPHA = 0.01 / np.pi #same diffusivity scale as main.py's NU, for a like-for-like comparison
@@ -79,6 +80,21 @@ def build_model(n_qubits=4, n_reuploads=3):
         checkpoint_config=checkpoint_config,
         pre_layer=burgersModel.pre_layer, pre_layer_scale=burgersModel.pre_layer_scale,
     )
+
+#same structure as eval.py's evaluate() for Burgers' - only the reference solution changes (heatEquationU instead of coleHopfU), grid construction and the L2-error formula are PDE-agnostic and reused directly from eval.py
+def evaluate(model, params, nx=256, nt=100):
+    xs, ts = buildEvalGrid(nx, nt)
+
+    uPred, uRef, residuals = [], [], []
+    for t in ts:
+        for x in xs:
+            uPred.append(model.network(t, x, params))
+            uRef.append(heatEquationU(x, t))
+            residuals.append(model.pde_residual(t, x, params))
+
+    l2Error = relativeL2Error(uPred, uRef)
+    pdeError = np.mean(np.array(residuals) ** 2)
+    return l2Error, pdeError
 
 if __name__ == "__main__":
     #sanity check only - not a training run, confirms the Fourier series collapses to -sin(pi*x) at t=0 like the closed form predicts, and decays toward 0 as t grows (no shock, so this should look nothing like Burgers)

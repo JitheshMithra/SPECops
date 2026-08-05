@@ -1,3 +1,5 @@
+import argparse
+
 import pennylane as qp
 from pennylane import numpy as np
 from types import SimpleNamespace
@@ -141,22 +143,19 @@ pde_residual = _default.pde_residual
 loss_fn = _default.loss_fn
 checkpoint_config = _default.checkpoint_config
 
+#lets a config be trained straight from the command line (python main.py --n-qubits 5 --n-reuploads 5 --epochs 100 --seed 1) instead of only through sweep.py/extend_training.py - loop imported here rather than at module level since loop.py itself does `import main`, and main is running as __main__ here rather than under the name "main", so importing loop any earlier would hit `from main import make_training_data` before that name exists
 if __name__ == "__main__":
-    params = init_params()
+    parser = argparse.ArgumentParser(description="train the quantum PINN directly from the command line")
+    parser.add_argument("--n-qubits", type=int, default=4)
+    parser.add_argument("--n-reuploads", type=int, default=3)
+    parser.add_argument("--epochs", type=int, default=100)
+    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--checkpoint", default=None, help="path to save the trained checkpoint")
+    args = parser.parse_args()
 
-    t_test = 0.5
-    x_test = 0.3
+    import loop
 
-
-    u_test = network(t_test, x_test, params)
-    f_test = pde_residual(t_test, x_test, params)
-    print(f"network({t_test}, {x_test}) = {u_test}")
-    print(f"pde_residual({t_test}, {x_test}) = {f_test}")
-
-    t_data, x_data, u_data, t_f, x_f = make_training_data()
-    #for a quick first test, only using a handful of collocation points
-    t_f_small = t_f[:20]
-    x_f_small = x_f[:20]
-
-    loss_value = loss_fn(params, t_data, x_data, u_data, t_f_small, x_f_small)
-    print(f"loss = {loss_value}")
+    np.random.seed(args.seed)
+    model = build_model(n_qubits=args.n_qubits, n_reuploads=args.n_reuploads)
+    params, history = loop.train(epochs=args.epochs, model=model, checkpointPath=args.checkpoint)
+    print(f"final loss = {float(history[-1]):.6f}")
