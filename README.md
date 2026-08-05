@@ -1,4 +1,4 @@
-**Version**: v2.0
+**Version**: v2.5
 
 _Built for the WISER Global Quantum+AI Program 2026 - [BQP Industry Challenge](https://docs.google.com/document/d/1X4xGUgML3F0ZKSTy7G4qfpRp6xlghJrEY8CtPVjH-4o/edit?tab=t.0)_
 
