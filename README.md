@@ -49,7 +49,7 @@ All scripts run from the `src` directory.
 
 ### CLI reference
 
-**`main.py`** — single QAPINN training run
+**`main.py`**: single QAPINN training run
 | Flag | Type | Default | Notes |
 |---|---|---|---|
 | `--n-qubits` | int | 4 | |
@@ -58,7 +58,7 @@ All scripts run from the `src` directory.
 | `--seed` | int | 0 | |
 | `--checkpoint` | str | None | path to save the trained checkpoint |
 
-**`sweep.py`** — full sweep driver
+**`sweep.py`**: full sweep driver
 | Flag | Type | Default | Notes |
 |---|---|---|---|
 | `--full-grid` | flag | off | re-eval one already-swept config's checkpoint at full 256x100 resolution instead of running the coarse sweep |
@@ -69,7 +69,7 @@ All scripts run from the `src` directory.
 | `--nt` | int | 100 | |
 | `--checkpoint-dir` | str | `DEFAULT_CHECKPOINT_DIR` | |
 
-**`eval.py`** — evaluate a checkpoint against the Cole-Hopf reference
+**`eval.py`**: evaluate a checkpoint against the Cole-Hopf reference
 | Flag | Type | Default | Notes |
 |---|---|---|---|
 | `--checkpoint` | str | `checkpoint.pkl` | |
@@ -78,7 +78,7 @@ All scripts run from the `src` directory.
 | `--nx` | int | 256 | |
 | `--nt` | int | 100 | |
 
-**`gradient_variance.py`** — barren-plateau check
+**`gradient_variance.py`**: barren-plateau check
 | Flag | Type | Default | Notes |
 |---|---|---|---|
 | `--single` | flag | off | internal, one config's variance, used by the subprocess-isolated sweep driver |
@@ -87,7 +87,7 @@ All scripts run from the `src` directory.
 | `--n-samples` | int | 50 | |
 | `--batch-size` | int | 5 | |
 
-**`activation_analysis.py`** — redundancy/activation comparison between checkpoints
+**`activation_analysis.py`**: redundancy/activation comparison between checkpoints
 | Flag | Type | Default | Notes |
 |---|---|---|---|
 | `--classical-checkpoint` | str | required | |
@@ -95,7 +95,7 @@ All scripts run from the `src` directory.
 | `--nx` | int | 20 | |
 | `--nt` | int | 20 | |
 
-**`extend_training.py`** — resume a checkpoint for extended-training / matched-optimizer comparisons
+**`extend_training.py`**: resume a checkpoint for extended-training / matched-optimizer comparisons
 | Flag | Type | Default | Notes |
 |---|---|---|---|
 | `--n-qubits` | int | required | |
@@ -112,7 +112,7 @@ All scripts run from the `src` directory.
 | `--out` | str | None | |
 | `--out-checkpoint` | str | None | |
 
-**`classical_deep_baseline.py`** — deeper classical control
+**`classical_deep_baseline.py`**: deeper classical control
 | Flag | Type | Default | Notes |
 |---|---|---|---|
 | `--hidden-layers` | int | 8 | |
@@ -122,7 +122,7 @@ All scripts run from the `src` directory.
 | `--n-f-batch` | int | 20 | |
 | `--report-every` | int | 500 | |
 
-**`train_adam.py`** — matched-optimizer convergence comparison
+**`train_adam.py`**: matched-optimizer convergence comparison
 | Flag | Type | Default | Notes |
 |---|---|---|---|
 | `--model` | choice | required | `quantum` or `classical_matched` |
@@ -136,7 +136,7 @@ All scripts run from the `src` directory.
 | `--eval-every` | int | 100 | |
 | `--out-checkpoint` | str | None | |
 
-**`heat_equation_sweep.py`** — heat-equation cross-check sweep
+**`heat_equation_sweep.py`**: heat-equation cross-check sweep
 | Flag | Type | Default | Notes |
 |---|---|---|---|
 | `--n-qubits` | int | required | |
@@ -218,7 +218,7 @@ python plot_q5_r5_convergence.py
 
 - Only one PDE so far (viscous Burgers'); a heat-equation cross-check is in progress (1/12 configs done as of this writing)
 - Extended-training comparisons have at most two seeds; one corner is still single-seed
-- No configuration we tested actually reaches expressivity sufficiency in either the smooth or shock region of the solution — read the sufficiency numbers as relative distance, not a pass/fail line
+- No configuration we tested actually reaches expressivity sufficiency in either the smooth or shock region of the solution - read the sufficiency numbers as relative distance, not a pass/fail line
 - Simulator only, nothing here has touched real quantum hardware
   
 ## Future Work
