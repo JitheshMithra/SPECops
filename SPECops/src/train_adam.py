@@ -21,7 +21,7 @@ def trainAdam(model, epochs, lr, nFBatch, reportEvery, evalEvery, curvePath, che
 
     tData, xData, uData, tF, xF = make_training_data()
 
-    curveFieldnames = ["epoch", "train_loss", "l2_error", "pde_residual_error"]
+    curveFieldnames = ["epoch", "train_loss", "l2_error", "pde_residual_error", "wall_clock_elapsed_sec"]
     with open(curvePath, "w", newline="") as f:
         csv.writer(f).writerow(curveFieldnames)
 
@@ -40,8 +40,9 @@ def trainAdam(model, epochs, lr, nFBatch, reportEvery, evalEvery, curvePath, che
 
         if epoch % evalEvery == 0 or epoch == epochs:
             l2Error, pdeError = evaluate(model, params, nx=64, nt=50)
+            wallClockElapsed = time.time() - startTime
             with open(curvePath, "a", newline="") as f:
-                csv.writer(f).writerow([epoch, currentLoss, l2Error, pdeError])
+                csv.writer(f).writerow([epoch, currentLoss, l2Error, pdeError, wallClockElapsed])
             if checkpointPath:
                 saveCheckpoint(checkpointPath, params, model.checkpoint_config())
             print(f"  [eval @ epoch {epoch}] l2={l2Error:.6f} pdeErr={pdeError:.6f}", flush=True)

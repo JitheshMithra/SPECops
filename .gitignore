@@ -190,5 +190,8 @@ __marimo__/
 *.pt
 SPECops/src/results/invalid_pre_fix/
 
-# SPECops: raw console-output dumps from long-running scripts, not source
-SPECops/src/*_log.txt
+# SPECops: raw console-output dumps from long-running scripts, not source - unrooted so it also catches stray logs left at the repo root (e.g. from a script run with the wrong cwd), not just ones under SPECops/src/
+*_log.txt
+
+# SPECops: working notes listing uncommitted changes for review before a deliberate commit, not source
+CHANGED_FILES.md
