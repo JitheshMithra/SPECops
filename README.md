@@ -278,6 +278,8 @@ python loss_landscape_slice.py
 - Investigate why redundancy driven down by removing entanglement correlates with worse accuracy, opposite the direction seen when redundancy is driven down by higher re-upload count; the mechanism behind this is not yet understood
 - Build a properly parameter-matched control for the measurement-operator (probs) variant, currently uncontrolled against the 71-vs-98 parameter mismatch
 - Extend Shapley attribution to gate-level and beyond the single q5,r5 config
+- Complete the heat-equation cross-validation to three seeds; two seeds resolved the worst single-seed noise but q5,r1 and q5,r5 still moved meaningfully between seeds
+- Add a third seed to q3,r1 and q5,r1 to bring all four corners to equal seed count
 
 ### Acknowledgements
 This project was carried out under [**Qinetic Labs**](https://www.qinetic.org/), with Jithesh Mithra as head researcher, leading the project and responsible for the majority of the implementation, experiments, and analysis. Thanks to Isaac Leon for contributions on the theory side, including work on the Fourier-ceiling framing and the disentanglement analysis.
