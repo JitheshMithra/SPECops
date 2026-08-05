@@ -1,0 +1,3 @@
+measurement,output_dim,param_count,l2_error,pde_residual_error,notes
+pauliz,5,71,0.6245276235992602,0.035853677793967254,"baseline, reused from sweep checkpoint"
+probs,32,98,0.7511542870562677,0.0067735721027037355,"post-layer input size = 32 (2^5) vs 5 for pauliz baseline - param count 71 -> 98 (delta=+27); breaks the parameter-matched comparison story from Section 9, which assumed post-layer input size = n_qubits"

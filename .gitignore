@@ -195,3 +195,6 @@ SPECops/src/results/invalid_pre_fix/
 
 # SPECops: working notes listing uncommitted changes for review before a deliberate commit, not source
 CHANGED_FILES.md
+
+# SPECops: retry/logging wrappers around the real scripts (run_*.sh), throwaway orchestration not source
+*.sh

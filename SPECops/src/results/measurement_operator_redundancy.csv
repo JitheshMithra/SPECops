@@ -1,0 +1,2 @@
+measurement,output_dim,mean_pairwise_correlation,effective_rank,notes
+probs,32,0.1675419846948038,4.241791499780899,"probs-based output, dimensionality 32 (2^5) vs 5 for the pauliz configs - not directly shape-comparable to the ring/linear/none PauliZ results"
