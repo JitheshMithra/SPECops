@@ -205,7 +205,7 @@ python sweep.py
 ```
 Crash-durable: writes a row per seed as it finishes, so a killed run can resume instead of restarting from scratch.
 
-**Fourier / expressivity analysis (no training needed, purely structural):**
+**Fourier / expressivity analysis (no training needed):**
 ```bash
 python fourier_spectrum.py
 python shock_spectrum.py
