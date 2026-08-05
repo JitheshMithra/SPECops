@@ -15,7 +15,8 @@ RESULTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results"
 
 #continues training from an already-trained checkpoint's params instead of a fresh init - this is loop.train()'s loop body, just seeded with initialParams, so a 100-epoch checkpoint can be pushed to 500+ without redoing the first 100
 def trainFrom(model, initialParams, additionalEpochs, lr=0.05, nFBatch=20,
-              evalEvery=100, evalNx=64, evalNt=50, startEpoch=0):
+              evalEvery=100, evalNx=64, evalNt=50, startEpoch=0,
+              midCheckpointEpoch=None, midCheckpointPath=None):
     params = initialParams
     opt = qp.GradientDescentOptimizer(stepsize=lr)
     t_data, x_data, u_data, t_f, x_f = make_training_data()
@@ -37,6 +38,11 @@ def trainFrom(model, initialParams, additionalEpochs, lr=0.05, nFBatch=20,
         if epoch % 50 == 0 or i == additionalEpochs:
             print(f"epoch {epoch:4d} loss = {current_loss:.6f}", flush=True)
 
+        #optional snapshot partway through a longer continuation (e.g. epoch 300 within a 100->500 run), separate from the end-of-run outCheckpoint save below so a mid-run snapshot doesn't require stopping the run there
+        if midCheckpointEpoch is not None and epoch == midCheckpointEpoch and midCheckpointPath:
+            saveCheckpoint(midCheckpointPath, params, model.checkpoint_config())
+            print(f"saved mid-run checkpoint to {midCheckpointPath} at epoch {epoch}", flush=True)
+
         if evalEvery and (epoch % evalEvery == 0 or i == additionalEpochs):
             evalStart = time.time()
             l2Error, pdeError = evaluate(model, params, nx=evalNx, nt=evalNt)
@@ -50,7 +56,7 @@ def trainFrom(model, initialParams, additionalEpochs, lr=0.05, nFBatch=20,
 
 def run(nQubits, nReuploads, seed, checkpointPath, additionalEpochs, startEpoch,
         lr=0.05, nFBatch=20, evalEvery=100, evalNx=64, evalNt=50,
-        outCsv=None, outCheckpoint=None):
+        outCsv=None, outCheckpoint=None, midCheckpointEpoch=None, midCheckpointPath=None):
     outCsv = outCsv or os.path.join(RESULTS_DIR, "longer_training_results.csv")
     os.makedirs(RESULTS_DIR, exist_ok=True)
 
@@ -61,7 +67,8 @@ def run(nQubits, nReuploads, seed, checkpointPath, additionalEpochs, startEpoch,
 
     startTime = time.time()
     params, history, evalPoints = trainFrom(model, initialParams, additionalEpochs, lr=lr, nFBatch=nFBatch,
-                                             evalEvery=evalEvery, evalNx=evalNx, evalNt=evalNt, startEpoch=startEpoch)
+                                             evalEvery=evalEvery, evalNx=evalNx, evalNt=evalNt, startEpoch=startEpoch,
+                                             midCheckpointEpoch=midCheckpointEpoch, midCheckpointPath=midCheckpointPath)
     trainTime = time.time() - startTime
     print(f"finished {additionalEpochs} additional epochs (total {startEpoch + additionalEpochs}) in {trainTime:.1f}s", flush=True)
 
@@ -95,8 +102,11 @@ if __name__ == "__main__":
     parser.add_argument("--eval-nt", type=int, default=50)
     parser.add_argument("--out", default=None)
     parser.add_argument("--out-checkpoint", default=None)
+    parser.add_argument("--mid-checkpoint-epoch", type=int, default=None, help="absolute epoch at which to save an extra checkpoint mid-run, e.g. 300 within a 100->500 continuation")
+    parser.add_argument("--mid-checkpoint-path", default=None)
     args = parser.parse_args()
 
     run(args.n_qubits, args.n_reuploads, args.seed, args.checkpoint, args.additional_epochs, args.start_epoch,
         lr=args.lr, nFBatch=args.n_f_batch, evalEvery=args.eval_every, evalNx=args.eval_nx, evalNt=args.eval_nt,
-        outCsv=args.out, outCheckpoint=args.out_checkpoint)
+        outCsv=args.out, outCheckpoint=args.out_checkpoint,
+        midCheckpointEpoch=args.mid_checkpoint_epoch, midCheckpointPath=args.mid_checkpoint_path)

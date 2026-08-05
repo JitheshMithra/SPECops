@@ -22,7 +22,7 @@ def snapshotMetrics(checkpointPath, nQubits, nReuploads, evalPoints):
     rank = effectiveRank(postOut)
     return meanPairwiseCorrelation, rank
 
-def run(configs, epochSnapshots=(100, 200, 300, 400, 500), nx=20, nt=20, outPath=None):
+def run(configs, epochSnapshots=(100, 300, 500), nx=20, nt=20, outPath=None):
     outPath = outPath or os.path.join(RESULTS_DIR, "redundancy_over_epochs.csv")
     evalPoints = buildEvalPoints(nx, nt)
 
