@@ -1,0 +1,24 @@
+{
+  "slope_ln": -1.2442506321050046,
+  "intercept_ln": -1.5270641529421507,
+  "r_squared": 0.9952853835181217,
+  "n_points": 4,
+  "observable": "projector_zero",
+  "qubit_counts": [
+    2,
+    4,
+    6,
+    8
+  ],
+  "layers_per_qubit": 2,
+  "n_samples": 200,
+  "variances": [
+    0.02175491835459187,
+    0.0012502764368567659,
+    0.00010155905488060739,
+    1.2546194966483516e-05
+  ],
+  "reference_slope_ln": -1.374,
+  "relative_error": 0.0944318543631699,
+  "passed": true
+}
