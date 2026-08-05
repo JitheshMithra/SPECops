@@ -4,7 +4,7 @@ _Built for the WISER Global Quantum+AI Program 2026 - [BQP Industry Challenge](h
 
 [![License](https://img.shields.io/badge/License-MIT-green)](https://github.com/JitheshMithra/SPECops/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.14.5-blue)](https://www.python.org/)
-[![PennyLane](https://img.shields.io/badge/PennyLane-Simulator-1A0060)](https://docs.pennylane.ai/)
+[![PennyLane](https://img.shields.io/badge/PennyLane-Simulator-FFD700)](https://docs.pennylane.ai/)
 ![Field](https://img.shields.io/badge/Field-QML-purple) 
 <p align="center">
   <a href="https://www.qinetic.org/">
