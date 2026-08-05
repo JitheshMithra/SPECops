@@ -24,6 +24,9 @@ This sweeps qubit count and data re-upload count across a quantum-assisted PINN,
 - Measures gradient variance across random initializations as a barren-plateau check
 - Measures representational redundancy inside the trained quantum layer (pairwise correlation and SVD effective rank of post-quantum-layer outputs,  a linear algebra tool for quantifying representational redundancy instead of just measuring correlation) as a mechanistic account of the expressivity ceiling, not just a correlation
 - Compares classical and quantum architectures under matched parameter counts and matched optimizer/epoch budgets
+- Attributes each variational layer's contribution to the trained circuit via Shapley values (q5,r5 config)
+- Tracks representational redundancy via SVD effective rank, not just pairwise correlation
+- CLI wrapper on `main.py` for qubit count / re-uploads / epochs / seed
 - Exports results as CSV/JSON/PNG under ```results/```
 
 ## Technical Report
@@ -44,6 +47,105 @@ pip install -r requirements.txt
 
 All scripts run from the `src` directory.
 
+### CLI reference
+
+**`main.py`** — single QAPINN training run
+| Flag | Type | Default | Notes |
+|---|---|---|---|
+| `--n-qubits` | int | 4 | |
+| `--n-reuploads` | int | 3 | |
+| `--epochs` | int | 100 | |
+| `--seed` | int | 0 | |
+| `--checkpoint` | str | None | path to save the trained checkpoint |
+
+**`sweep.py`** — full sweep driver
+| Flag | Type | Default | Notes |
+|---|---|---|---|
+| `--full-grid` | flag | off | re-eval one already-swept config's checkpoint at full 256x100 resolution instead of running the coarse sweep |
+| `--n-qubits` | int | required for `--full-grid` | |
+| `--n-reuploads` | int | required for `--full-grid` | |
+| `--seed` | int | 0 | |
+| `--nx` | int | 256 | |
+| `--nt` | int | 100 | |
+| `--checkpoint-dir` | str | `DEFAULT_CHECKPOINT_DIR` | |
+
+**`eval.py`** — evaluate a checkpoint against the Cole-Hopf reference
+| Flag | Type | Default | Notes |
+|---|---|---|---|
+| `--checkpoint` | str | `checkpoint.pkl` | |
+| `--results` | str | `results/eval_results.csv` | |
+| `--model` | str | `main` | module defining `network()`/`pde_residual()` for this checkpoint, e.g. `main` or `main_classical` |
+| `--nx` | int | 256 | |
+| `--nt` | int | 100 | |
+
+**`gradient_variance.py`** — barren-plateau check
+| Flag | Type | Default | Notes |
+|---|---|---|---|
+| `--single` | flag | off | internal, one config's variance, used by the subprocess-isolated sweep driver |
+| `--n-qubits` | int | required for `--single` | |
+| `--n-reuploads` | int | required for `--single` | |
+| `--n-samples` | int | 50 | |
+| `--batch-size` | int | 5 | |
+
+**`activation_analysis.py`** — redundancy/activation comparison between checkpoints
+| Flag | Type | Default | Notes |
+|---|---|---|---|
+| `--classical-checkpoint` | str | required | |
+| `--quantum-checkpoint` | str | required | |
+| `--nx` | int | 20 | |
+| `--nt` | int | 20 | |
+
+**`extend_training.py`** — resume a checkpoint for extended-training / matched-optimizer comparisons
+| Flag | Type | Default | Notes |
+|---|---|---|---|
+| `--n-qubits` | int | required | |
+| `--n-reuploads` | int | required | |
+| `--seed` | int | required | |
+| `--checkpoint` | str | required | existing trained checkpoint to continue from |
+| `--additional-epochs` | int | required | |
+| `--start-epoch` | int | 100 | epoch count the input checkpoint already represents |
+| `--eval-every` | int | 100 | |
+| `--lr` | float | 0.05 | |
+| `--n-f-batch` | int | 20 | |
+| `--eval-nx` | int | 64 | |
+| `--eval-nt` | int | 50 | |
+| `--out` | str | None | |
+| `--out-checkpoint` | str | None | |
+
+**`classical_deep_baseline.py`** — deeper classical control
+| Flag | Type | Default | Notes |
+|---|---|---|---|
+| `--hidden-layers` | int | 8 | |
+| `--hidden-width` | int | 20 | |
+| `--epochs` | int | 5000 | |
+| `--lr` | float | 1e-3 | |
+| `--n-f-batch` | int | 20 | |
+| `--report-every` | int | 500 | |
+
+**`train_adam.py`** — matched-optimizer convergence comparison
+| Flag | Type | Default | Notes |
+|---|---|---|---|
+| `--model` | choice | required | `quantum` or `classical_matched` |
+| `--n-qubits` | int | 5 | |
+| `--n-reuploads` | int | 5 | |
+| `--hidden-width` | int | 18 | |
+| `--epochs` | int | 5000 | |
+| `--lr` | float | 1e-3 | |
+| `--n-f-batch` | int | 200 | |
+| `--report-every` | int | 500 | |
+| `--eval-every` | int | 100 | |
+| `--out-checkpoint` | str | None | |
+
+**`heat_equation_sweep.py`** — heat-equation cross-check sweep
+| Flag | Type | Default | Notes |
+|---|---|---|---|
+| `--n-qubits` | int | required | |
+| `--n-reuploads` | int | required | |
+| `--seed` | int | 0 | |
+| `--epochs` | int | 100 | |
+| `--n-f-batch` | int | 20 | |
+
+
 **Classical control (run this first, it's the sanity check):**
 ```bash
 python main_classical.py
@@ -51,7 +153,7 @@ python main_classical.py
 
 **Single QAPINN run:**
 ```bash
-python main.py
+python main.py --n-qubits 5 --n-reuploads 5 --epochs 100 --seed 0
 ```
 
 **Evaluate against the Cole-Hopf reference:**
@@ -86,6 +188,12 @@ python extend_training.py --n-qubits 5 --n-reuploads 5 --seed 0 --checkpoint swe
 python classical_deep_baseline.py --hidden-layers 8 --hidden-width 20 --epochs 5000 --lr 1e-3
 python train_adam.py --n-qubits 5 --n-reuploads 5 --epochs 1000 --lr 1e-3
 python run_classical_comparison.py
+python effective_rank.py
+python shapley_layer_attribution.py
+python heat_equation.py
+python heat_equation_sweep.py
+python redundancy_over_epochs.py
+python plot_q5_r5_convergence.py
 ```
 ### Results 
 
@@ -99,23 +207,26 @@ python run_classical_comparison.py
 | `activation_diversity.csv`, `activation_measurement_check.csv` | `activation_diversity.py` | The redundancy metric; check for whether it's a measurement artifact |
 | `flatness_check.csv/.png` | `flatness_check.py` | Solution flatness vs. reference: the spectral-bias confirmation |
 | `classical_comparison.csv`, `longer_training_results.csv` | comparison scripts | Classical vs. quantum, matched-parameter and matched-optimizer results |
+| `effective_rank.csv` | `effective_rank.py` | SVD-based effective rank per config |
+| `shapley_layer_attribution.csv`, `shapley_subset_l2.csv` | `shapley_layer_attribution.py` | Per-layer Shapley attribution, q5,r5 |
+| `classical_matched_adam_convergence.csv`, `q5_r5_adam_convergence.csv` | optimizer-comparison scripts | Convergence traces under matched optimizer/epochs |
+| `heat_equation_sweep.csv` | `heat_equation_sweep.py` | Heat-equation cross-check sweep (in progress) |
+| `redundancy_over_epochs.csv` | `redundancy_over_epochs.py` | Redundancy/effective rank tracked across training epochs (in progress) |
 | `results/invalid_pre_fix/` | - | Archived, invalid: predates an optimizer bug fix. Don't use anything in here. |
 
 ## Limitations
 
-- Only one PDE so far (viscous Burgers'); a heat-equation cross-check is scaffolded but not finished
-- Extended-training comparisons past the base sweep are currently single-seed
-- The original classical control was noticeably smaller (parameter count) than the largest QAPINN tested; a parameter-matched control exists but the optimizer-matched comparison is still being finalized
-- No configuration tested actually reaches expressivity sufficiency in either the smooth or shock region of the solution; read the sufficiency numbers as relative distance, not a pass/fail line
+- Only one PDE so far (viscous Burgers'); a heat-equation cross-check is in progress (1/12 configs done as of this writing)
+- Extended-training comparisons have at most two seeds; one corner is still single-seed
+- No configuration we tested actually reaches expressivity sufficiency in either the smooth or shock region of the solution — read the sufficiency numbers as relative distance, not a pass/fail line
 - Simulator only, nothing here has touched real quantum hardware
-
+  
 ## Future Work
 
-- Pull the PDE-specific logic behind a shared interface so adding a new PDE (starting with the heat equation) doesn't mean touching the core pipeline
-- Build the direct CLI input for parameters from users, a tool to observe the effect assumptions have on behavior
-- Track redundancy/effective rank across training epochs instead of just at fixed checkpoints
-- Compare entanglement patterns and measurement operators (expectation values vs. probability vector)
-- Shapley-value gate attribution for the variational block
+- Formalize the circuit-reuse pattern used by `heat_equation.py` into a documented, general PDE interface
+- Finish the redundancy/effective-rank-over-epochs sweep (in progress)
+- Compare entanglement patterns and measurement operators, expectation values vs. probability vector (in progress)
+- Extend Shapley attribution to gate-level and beyond the single q5,r5 config
 
 ### Acknowledgements
 This project was carried out under [**Qinetic Labs**](https://www.qinetic.org/), with Jithesh Mithra as head researcher, leading the project and responsible for the majority of the implementation, experiments, and analysis. Thanks to Isaac Leon for contributions on the theory side, including work on the Fourier-ceiling framing and the disentanglement analysis.
