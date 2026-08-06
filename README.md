@@ -67,9 +67,10 @@ SPECops/
         └── invalid_pre_fix/                 archived, pre-bug-fix, don't use
 ```
 
-## Technical Report
-
-The full writeup, methodology, results, and the honest caveats (uneven seed counts across corners, an under-parameterized early baseline, etc.) will be posted soon
+## Technical Report and presentation
+_Technical report_: 
+_Presentation video_: 
+_Presentation slides_: https://docs.google.com/presentation/d/1EuajB9LHFVCurqfstAIHFrJeJhzK_FI32wzwsCSqjZ4/edit?usp=sharing
 
 ## Getting Started
 
