@@ -284,7 +284,7 @@ python loss_landscape_slice.py
 ### Acknowledgements
 This project was carried out under [**Qinetic Research Lab**](https://www.qinetic.org/), with Jithesh Mithra as head researcher, leading the project and responsible for the majority of the implementation, experiments, and analysis. Thanks to Isaac Leon for contributions on the theory side, including work on the Fourier-ceiling framing and the disentanglement analysis. 
 
-No compute, help, or external resources were provided by Qinetic for this project, simply a platform we are connected to as researchers.
+No compute, help, or external resources were provided by Qinetic for this project; simply a platform we represent as researchers.
 
 **Contact**:
 - _Email_: jitheshmithra412 [at] gmail [dot] com **and/or** isaacleon0907 [at] gmail [dot] com
