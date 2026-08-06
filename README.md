@@ -64,7 +64,6 @@ SPECops/
     ├── redundancy_over_epochs.py            redundancy tracked across training epochs
     ├── loss_landscape_slice.py              filter-normalized loss landscape (q5,r5)
     └── results/                             ~34 tracked CSV/PNG/JSON outputs
-        └── invalid_pre_fix/                 archived, pre-bug-fix, don't use
 ```
 
 ## Technical Report and presentation
