@@ -282,7 +282,9 @@ python loss_landscape_slice.py
 - Add a third seed to q3,r1 and q5,r1 to bring all four corners to equal seed count
 
 ### Acknowledgements
-This project was carried out under [**Qinetic Research Lab**](https://www.qinetic.org/), with Jithesh Mithra as head researcher, leading the project and responsible for the majority of the implementation, experiments, and analysis. Thanks to Isaac Leon for contributions on the theory side, including work on the Fourier-ceiling framing and the disentanglement analysis.
+This project was carried out under [**Qinetic Research Lab**](https://www.qinetic.org/), with Jithesh Mithra as head researcher, leading the project and responsible for the majority of the implementation, experiments, and analysis. Thanks to Isaac Leon for contributions on the theory side, including work on the Fourier-ceiling framing and the disentanglement analysis. 
+
+No compute, help, or external resources were provided by Qinetic for this project, simply a platform we are connected to as researchers.
 
 **Contact**:
 - _Email_: jitheshmithra412 [at] gmail [dot] com **and/or** isaacleon0907 [at] gmail [dot] com
