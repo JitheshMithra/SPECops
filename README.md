@@ -16,7 +16,7 @@ _Built for the WISER Global Quantum+AI Program 2026 - [BQP Industry Challenge](h
 
 SPECops starts from a simple question about quantum-assisted PINNs: when you swap a classical layer for a quantum circuit and the network gets more accurate, is that actually because the quantum layer is more expressive, or is something else going on? Most benchmarks stop at "it worked" or "it didn't." This project tries to get underneath that, using the viscous Burgers' equation as a testbed.
 
-This sweeps qubit count and data re-upload count across a quantum-assisted PINN, works out each configuration's accessible Fourier frequency range from first principles, and checks whether that range actually predicts where the network struggles. Runs entirely on Pennylane simulator, nothing here needs quantum hardware. Spectral bias, the tendency of neural networks to fit low-frequency components before high-frequency ones, is the named phenomenon this project provides a mechanistic account of, connecting it directly to the Fourier ceiling imposed by circuit structure. 
+This sweeps qubit count and data re-upload count across a quantum-assisted PINN, works out each configuration's accessible Fourier frequency range from first principles, and checks whether that range actually predicts where the network struggles. Runs entirely on Pennylane simulator, nothing here needs quantum hardware. Spectral bias, the tendency of neural networks to fit low-frequency components before high-frequency ones, is the named phenomenon this project provides a mechanistic account of, connecting it directly to the Fourier ceiling imposed by circuit structure. Open-source and reproducible (see REPRODUCIBILITY.md); no institutional compute required as everything runs from the command line.
 
 **What it does:**
 - Trains classical PINNs and QAPINNs on 1D viscous Burgers' equation against an exact Cole-Hopf reference solution
@@ -28,10 +28,48 @@ This sweeps qubit count and data re-upload count across a quantum-assisted PINN,
 - Attributes each variational layer's contribution to the trained circuit via Shapley values (q5,r5 config)
 - CLI wrapper on `main.py` for qubit count / re-uploads / epochs / seed
 - Exports results as CSV/JSON/PNG under ```results/```
+- Cross-validates the mechanism on a second PDE (heat equation) and tests circuit-structure variants (entanglement topology, measurement operator)
 
-## Technical Report
+## Repository Structure
+```
+SPECops/
+└── src/
+    ├── main.py                              single QAPINN run
+    ├── main_classical.py                    classical control
+    ├── loop.py                              shared training loop (library)
+    ├── checkpoint.py                        save/load helper (library)
+    ├── eval.py                              Cole-Hopf evaluation
+    ├── sweep.py                             12-config x 3-seed sweep driver
+    ├── run_classical_comparison.py
+    ├── gradient_variance.py                 barren-plateau check
+    ├── fourier_spectrum.py                  structural Fourier ceiling per config
+    ├── shock_spectrum.py                    target-solution bandwidth
+    ├── frequency_unit_conversion.py         theta-space -> physical-x, sufficiency ratio
+    ├── activation_analysis.py               classical vs. quantum redundancy (2-checkpoint)
+    ├── activation_diversity.py              12-config + classical redundancy
+    ├── effective_rank.py                    SVD effective rank, 12 configs
+    ├── flatness_check.py                    spectral-bias / flat-solution check
+    ├── stratified_eval.py                   smooth vs. shock L2 split
+    ├── extend_training.py                   resume checkpoint for longer/matched-optimizer runs
+    ├── train_adam.py                        Adam-matched classical vs. quantum comparison
+    ├── classical_deep_baseline.py           deep tanh MLP control
+    ├── plot_q5_r5_convergence.py
+    ├── shapley_layer_attribution.py         Shapley layer attribution (q5,r5 only)
+    ├── heat_equation.py                     heat-eq reference (library + sanity check)
+    ├── heat_equation_sweep.py               heat-eq cross-check sweep (complete, 12x2)
+    ├── heat_equation_redundancy.py          redundancy metrics on heat-eq checkpoints
+    ├── entanglement_variation.py            ring/linear/none topology comparison (q5,r5)
+    ├── measurement_operator_variation.py    Pauli-Z vs. probs() readout
+    ├── measurement_operator_redundancy.py   redundancy on the probs checkpoint
+    ├── redundancy_over_epochs.py            redundancy tracked across training epochs
+    ├── loss_landscape_slice.py              filter-normalized loss landscape (q5,r5)
+    └── results/                             ~34 tracked CSV/PNG/JSON outputs
+```
 
-The full writeup, methodology, results, and the honest caveats (single-seed extended runs, an under-parameterized early baseline, etc.) will be posted soon
+## Technical Report and presentation
+- [_Technical report_](https://pdflink.to/801a955e/)
+- [_Presentation video_](https://youtu.be/8PtlH3DJy30)
+- [_Presentation slides_](https://docs.google.com/presentation/d/1EuajB9LHFVCurqfstAIHFrJeJhzK_FI32wzwsCSqjZ4/edit?usp=sharing) 
 
 ## Getting Started
 
@@ -146,7 +184,7 @@ All scripts run from the `src` directory.
 | `--n-f-batch` | int | 20 | |
 
 
-**Classical control (run this first, it's the sanity check):**
+**Classical control (run this first):**
 ```bash
 python main_classical.py
 ```
@@ -167,7 +205,7 @@ python sweep.py
 ```
 Crash-durable: writes a row per seed as it finishes, so a killed run can resume instead of restarting from scratch.
 
-**Fourier / expressivity analysis (no training needed, purely structural):**
+**Fourier / expressivity analysis (no training needed):**
 ```bash
 python fourier_spectrum.py
 python shock_spectrum.py
@@ -195,6 +233,11 @@ python heat_equation_sweep.py
 python redundancy_over_epochs.py
 python plot_q5_r5_convergence.py
 python stratified_eval.py
+python entanglement_variation.py
+python measurement_operator_variation.py
+python measurement_operator_redundancy.py
+python heat_equation_redundancy.py
+python loss_landscape_slice.py
 ```
 ### Results 
 
@@ -213,14 +256,18 @@ python stratified_eval.py
 | `effective_rank.csv` | `effective_rank.py` | SVD-based effective rank per config |
 | `shapley_layer_attribution.csv`, `shapley_subset_l2.csv` | `shapley_layer_attribution.py` | Per-layer Shapley attribution, q5,r5 |
 | `classical_matched_adam_convergence.csv`, `q5_r5_adam_convergence.csv` | optimizer-comparison scripts | Convergence traces under matched optimizer/epochs |
-| `heat_equation_sweep.csv` | `heat_equation_sweep.py` | Heat-equation cross-check sweep (in progress) |
-| `redundancy_over_epochs.csv` | `redundancy_over_epochs.py` | Redundancy/effective rank tracked across training epochs (in progress) |
-| `results/invalid_pre_fix/` | - | Archived, invalid: predates an optimizer bug fix. Don't use anything in here. |
+| `heat_equation_sweep.csv` | `heat_equation_sweep.py` | Heat-equation cross-check sweep, complete (12 configs x 2 seeds) |
+| `redundancy_over_epochs.csv` | `redundancy_over_epochs.py` | Redundancy/effective rank tracked across training epochs (partial: 2 of 12 configs, q3_r1 and q5_r5) |
+| `entanglement_variation.csv` | `entanglement_variation.py` | Ring vs. linear vs. none CNOT topology, q5,r5 — L2/residual/redundancy side by side |
+| `measurement_operator_variation.csv` | `measurement_operator_variation.py` | Pauli-Z vs. probs() readout, q5,r5 — note: breaks the parameter-matched comparison (71 vs. 98 params) |
+| `measurement_operator_redundancy.csv` | `measurement_operator_redundancy.py` | Redundancy metrics on the probs-based output (32-dim, not shape-comparable to Pauli-Z configs) |
+| `heat_equation_redundancy.csv` | `heat_equation_redundancy.py` | Redundancy/effective-rank metrics on heat-equation checkpoints, both seeds |
+| `loss_landscape_slice.csv`, `loss_landscape_slice.png` | `loss_landscape_slice.py` | Filter-normalized loss-landscape slice around the converged q5,r5 minimum |
 
 ## Limitations
 
-- Only one PDE so far (viscous Burgers'); a heat-equation cross-check is in progress (1/12 configs done as of this writing)
-- Extended-training comparisons have at most two seeds; one corner is still single-seed
+- Two PDEs now tested (Burgers' and heat equation); heat-equation cross-check is complete at 2 seeds per config, though some configs (q5,r1, q5,r5) still show real seed-to-seed movement rather than convergence - a third seed would settle this
+- Extended-training comparisons have at most three seeds (q5,r5); q3,r5's second seed landed this session, no corner is single-seed anymore, though seed counts are uneven across the four corners
 - No configuration we tested actually reaches expressivity sufficiency in either the smooth or shock region of the solution - read the sufficiency numbers as relative distance, not a pass/fail line
 - Simulator only, nothing here has touched real quantum hardware
   
@@ -228,11 +275,16 @@ python stratified_eval.py
 
 - Formalize the circuit-reuse pattern used by `heat_equation.py` into a documented, general PDE interface
 - Finish the redundancy/effective-rank-over-epochs sweep (in progress)
-- Compare entanglement patterns and measurement operators, expectation values vs. probability vector (planned, not started)
+- Investigate why redundancy driven down by removing entanglement correlates with worse accuracy, opposite the direction seen when redundancy is driven down by higher re-upload count; the mechanism behind this is not yet understood
+- Build a properly parameter-matched control for the measurement-operator (probs) variant, currently uncontrolled against the 71-vs-98 parameter mismatch
 - Extend Shapley attribution to gate-level and beyond the single q5,r5 config
+- Complete the heat-equation cross-validation to three seeds; two seeds resolved the worst single-seed noise but q5,r1 and q5,r5 still moved meaningfully between seeds
+- Add a third seed to q3,r1 and q5,r1 to bring all four corners to equal seed count
 
 ### Acknowledgements
-This project was carried out under [**Qinetic Labs**](https://www.qinetic.org/), with Jithesh Mithra as head researcher, leading the project and responsible for the majority of the implementation, experiments, and analysis. Thanks to Isaac Leon for contributions on the theory side, including work on the Fourier-ceiling framing and the disentanglement analysis.
+This project was carried out under [**Qinetic Research Lab**](https://www.qinetic.org/), with Jithesh Mithra as head researcher, leading the project and responsible for the majority of the implementation, experiments, and analysis. Thanks to Isaac Leon for contributions on the theory side, including work on the Fourier-ceiling framing and the disentanglement analysis. 
+
+No compute, help, or external resources were provided by Qinetic for this project; simply a platform we represent as researchers.
 
 **Contact**:
 - _Email_: jitheshmithra412 [at] gmail [dot] com **and/or** isaacleon0907 [at] gmail [dot] com
