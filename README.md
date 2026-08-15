@@ -8,7 +8,7 @@ _Built for the WISER Global Quantum+AI Program 2026 - [BQP Industry Challenge](h
 ![Field](https://img.shields.io/badge/Field-QML-purple) 
 <p align="center">
   <a href="https://www.qinetic.org/">
-    <img width="824" height="302" alt="image" src="https://github.com/user-attachments/assets/698b278b-720f-4eee-8628-6a825d76435f" />
+    <img width="1024" height="316" alt="logos (1)" src="https://github.com/user-attachments/assets/56c45af0-3425-418a-970b-c982fcb81c59" />
   </a>
 </p>
 
