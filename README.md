@@ -1,5 +1,3 @@
-**Version**: v3.0
-
 _**3rd Place** for the WISER Global Quantum+AI Industry Challenges 2026 - [BQP Industry Challenge](https://docs.google.com/document/d/1X4xGUgML3F0ZKSTy7G4qfpRp6xlghJrEY8CtPVjH-4o/edit?tab=t.0)_
 
 [![License](https://img.shields.io/badge/License-MIT-green)](https://github.com/JitheshMithra/SPECops/blob/main/LICENSE)
