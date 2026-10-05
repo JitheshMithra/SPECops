@@ -65,7 +65,7 @@ SPECops/
 ```
 
 ## Technical Report and presentation
-- [_Technical report_](https://github.com/JitheshMithra/SPECops/blob/main/document.pdf)
+- [_Technical report_](Technical%20Report.pdf)
 - [_Presentation video_](https://youtu.be/8PtlH3DJy30)
 - [_Presentation slides_](https://docs.google.com/presentation/d/1EuajB9LHFVCurqfstAIHFrJeJhzK_FI32wzwsCSqjZ4/edit?usp=sharing) 
 
